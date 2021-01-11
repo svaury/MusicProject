@@ -1,4 +1,9 @@
 package com.example.musicprojectandroid.model
 
-class Music {
-}
+data class Music (
+    val id: Int,
+    val albumId : Int,
+    val title: String? = "",
+    val url: String? = "",
+    val thumbnailUrl : String ?= ""
+)
