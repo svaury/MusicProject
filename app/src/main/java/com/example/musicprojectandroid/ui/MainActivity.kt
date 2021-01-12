@@ -10,17 +10,16 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.musicprojectandroid.R
 import com.example.musicprojectandroid.model.Music
-import com.example.musicprojectandroid.ui.adapter.MusicListAdpter
-import com.example.musicprojectandroid.ui.model.MusicAlbum
-import com.example.musicprojectandroid.ui.model.TypeModelMusic
+import com.example.musicprojectandroid.ui.adapter.AlbumAdapter
 import com.example.musicprojectandroid.ui.viewmodels.MusicViewModel
+import com.example.musicprojectandroid.utils.Data
 import com.example.musicprojectandroid.utils.Status
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: MusicViewModel
-    private  lateinit var musicListAdpter: MusicListAdpter
+    private  lateinit var albumAdpter: AlbumAdapter
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,8 +32,8 @@ class MainActivity : AppCompatActivity() {
     }
     private fun setupUI() {
         recyclerView.layoutManager = LinearLayoutManager(this)
-        musicListAdpter = MusicListAdpter(arrayListOf())
-        recyclerView.adapter = musicListAdpter
+        albumAdpter = AlbumAdapter(hashMapOf(),arrayListOf())
+        recyclerView.adapter = albumAdpter
     }
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
@@ -53,25 +52,11 @@ class MainActivity : AppCompatActivity() {
              when(it.status){
                  Status.ERROR -> {
                      Log.i("ERROR", "ERROR "+ it?.message)
-                     musicListAdpter.updateMusicsList(it.data!!)
+                     displayData(it)
 
                  }
                  Status.SUCCESS -> {
-                     recyclerView.visibility = View.VISIBLE
-                     progressBar.visibility = View.GONE
-                     val musicSortByAlbumId = it.data?.groupBy { music -> music.albumId }
-                     val musicList = arrayListOf<MusicAlbum>()
-                     musicSortByAlbumId?.let {map->
-                         for(key in map.keys){
-                             musicList.add(MusicAlbum(TypeModelMusic.ALBUM, null))
-                             val musicToMusicAlbum = musicSortByAlbumId[key]?.map { music -> MusicAlbum(TypeModelMusic.TITLE,music) }
-                             musicList.addAll(musicToMusicAlbum!!)
-                         }
-                     }
-
-
-                     musicListAdpter.updateMusicsList(it.data!!)
-                    Log.i("SUCCESS", "SUCCESS "+ it.data?.size)
+                    displayData(it)
                  }
                  Status.LOADING -> {
                      Log.i("LOADING", "LOADING "+ it.data?.size)
@@ -79,5 +64,12 @@ class MainActivity : AppCompatActivity() {
              }
 
         })
+    }
+
+    private fun displayData(data : Data<List<Music>>){
+        recyclerView.visibility = View.VISIBLE
+        progressBar.visibility = View.GONE
+        val musicSortByAlbumId = data.data?.groupByTo(HashMap()) { music -> music.albumId }
+        albumAdpter.updateAlbumMap(musicSortByAlbumId)
     }
 }
