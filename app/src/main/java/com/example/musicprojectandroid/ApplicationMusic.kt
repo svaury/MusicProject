@@ -5,14 +5,16 @@ import android.content.Context
 
 class ApplicationMusic : Application() {
 
-    override fun onCreate() {
-        super.onCreate()
-        ApplicationMusic.appContext = applicationContext
-    }
 
     companion object {
 
         lateinit  var appContext: Context
 
     }
+
+    override fun onCreate() {
+        super.onCreate()
+        appContext = applicationContext
+    }
+
 }

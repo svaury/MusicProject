@@ -34,4 +34,10 @@ class MusicRepository() {
         }
     }
 
+    fun getMusciFromDb(): Flow<Data<List<Music>>> = flow{
+        val resultFromDao =   musicDao.getAllMusics().map { musicDao -> ToApiModelMapper.toApiModel(musicDao)}
+        emit(Data.success(resultFromDao))
+
+    }
+
 }
