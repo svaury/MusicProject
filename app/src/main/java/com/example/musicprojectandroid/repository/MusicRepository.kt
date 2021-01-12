@@ -29,14 +29,12 @@ class MusicRepository() {
             emit(Data.success(result))
             musicDao.deleteAndInsert(result.map { music -> ToDbModelMapper.toDbModel(music) })
         } catch (throwable: Throwable) {
-            val resultFromDao = musicDao.getAllMusics().map { musicDao -> ToApiModelMapper.toApiModel(musicDao) }
-            emit(Data.error(resultFromDao,throwable.message?: ""))
+            emit(Data.error( musicDao.getAllMusics().map { musicDao -> ToApiModelMapper.toApiModel(musicDao) },throwable.message?: ""))
         }
     }
 
     fun getMusciFromDb(): Flow<Data<List<Music>>> = flow{
-        val resultFromDao =   musicDao.getAllMusics().map { musicDao -> ToApiModelMapper.toApiModel(musicDao)}
-        emit(Data.success(resultFromDao))
+        emit(Data.success(musicDao.getAllMusics().map { musicDao -> ToApiModelMapper.toApiModel(musicDao)}))
 
     }
 

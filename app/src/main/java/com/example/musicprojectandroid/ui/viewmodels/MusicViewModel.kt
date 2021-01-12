@@ -22,10 +22,10 @@ class MusicViewModel : ViewModel() {
     fun getAllMusic(bundle: Bundle?) : LiveData<Data<List<Music>>>{
 
         return if(bundle?.getBoolean(isDataRestored) != null && bundle.getBoolean(isDataRestored)){
-            musicRepository.getMusciFromDb().asLiveData(Dispatchers.IO + viewModelScope.coroutineContext)
+            musicRepository.getMusciFromDb().asLiveData(viewModelScope.coroutineContext + Dispatchers.IO )
 
         }else{
-            musicRepository.getAllMusicsFromApi().asLiveData(Dispatchers.IO + viewModelScope.coroutineContext)
+            musicRepository.getAllMusicsFromApi().asLiveData(viewModelScope.coroutineContext +Dispatchers.IO )
         }
     }
 
