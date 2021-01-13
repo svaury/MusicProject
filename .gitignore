@@ -36,6 +36,20 @@ proguard/
 # Android Studio captures folder
 captures/
 
+.idea
+.gradle
+/*/local.properties
+/*/out
+/*/*/build
+build
+/*/*/production
+*.iml
+*.iws
+*.ipr
+*~
+*.swp
+
+
 # IntelliJ
 *.iml
 .idea/workspace.xml
