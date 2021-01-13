@@ -1,4 +1,4 @@
-package com.example.musicprojectandroid.ui
+package com.example.musicprojectandroid.ui.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: MusicViewModel
     private  lateinit var albumAdpter: AlbumAdapter
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
