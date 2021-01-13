@@ -15,31 +15,64 @@ import com.example.musicprojectandroid.ui.viewmodels.MusicViewModel
 import com.example.musicprojectandroid.utils.Data
 import com.example.musicprojectandroid.utils.Status
 import kotlinx.android.synthetic.main.activity_main.*
+import android.os.Parcelable
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import androidx.recyclerview.widget.RecyclerView
+import androidx.core.content.ContextCompat.getSystemService
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+
+
+
+
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: MusicViewModel
     private  lateinit var albumAdpter: AlbumAdapter
 
+    var state: Parcelable? = null
+
+    var mLayoutManager: RecyclerView.LayoutManager? = null
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        mLayoutManager =  LinearLayoutManager(this)
         setupViewModel()
         setUpLiveData(savedInstanceState)
         setupUI()
+        if(state != null) {
+            mLayoutManager?.onRestoreInstanceState(state);
+
+        }
 
     }
+
+    override fun onResume() {
+        super.onResume()
+        if (state != null) {
+            mLayoutManager?.onRestoreInstanceState(state);
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        state = mLayoutManager?.onSaveInstanceState()
+    }
     private fun setupUI() {
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.layoutManager = mLayoutManager
         albumAdpter = AlbumAdapter(hashMapOf(),arrayListOf())
         recyclerView.adapter = albumAdpter
     }
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
         super.onSaveInstanceState(outState, outPersistentState)
+
         viewModel.saveState(outState)
+
     }
 
 
