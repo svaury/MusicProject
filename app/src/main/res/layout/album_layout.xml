@@ -16,12 +16,8 @@
         <TextView
             android:id="@+id/albumTextView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="40dp"
             android:background="@color/colorPrimary" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/album_recyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
     </androidx.cardview.widget.CardView>
 </LinearLayout>

@@ -14,14 +14,14 @@ import java.util.*
 class MusicViewModel : ViewModel() {
 
     companion object {
-        const val isDataRestored = "isDataRestored"
+        const val IsDataRestored = "IsDataRestored"
     }
 
     val musicRepository = MusicRepository()
 
     fun getAllMusic(bundle: Bundle?) : LiveData<Data<List<Music>>>{
 
-        return if(bundle?.getBoolean(isDataRestored) != null && bundle.getBoolean(isDataRestored)){
+        return if(bundle?.getBoolean(IsDataRestored) != null && bundle.getBoolean(IsDataRestored)){
             musicRepository.getMusciFromDb().asLiveData(viewModelScope.coroutineContext + Dispatchers.IO )
 
         }else{
@@ -31,7 +31,7 @@ class MusicViewModel : ViewModel() {
 
 
     fun saveState(bundle: Bundle){
-        bundle.putBoolean(isDataRestored,true)
+        bundle.putBoolean(IsDataRestored,true)
     }
 
 }
