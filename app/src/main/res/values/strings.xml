@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MusicProjectAndroid</string>
+    <string name="albumTitle">Album</string>
 </resources>

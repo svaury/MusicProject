@@ -4,6 +4,7 @@ import com.example.musicprojectandroid.model.Music
 import com.example.musicprojectandroid.repository.MusicRepository
 import com.example.musicprojectandroid.repository.local.dao.MusicDao
 import com.example.musicprojectandroid.repository.local.entity.MusicEntity
+import com.example.musicprojectandroid.repository.remote.ToApiModelMapper
 import com.example.musicprojectandroid.repository.remote.services.MusicApiService
 import com.example.musicprojectandroid.utils.Data
 import com.example.musicprojectandroid.utils.Status
@@ -65,9 +66,7 @@ class MockRespositoryTest {
         val result2 = musicRepository.getAllMusicsFromApi().toList()
 
         assertEquals(result2[1].data?.size,mockLocalMusicList().size)
-        assertEquals(result2[1].data, mockLocalMusicList())
-
-
+        assertEquals(result2[1].data, mockLocalMusicList().map { musicEntity -> ToApiModelMapper.toApiModel(musicEntity)})
 
     }
 
@@ -125,6 +124,7 @@ class MockRespositoryTest {
         return listMusic
 
     }
+
 
 
 }

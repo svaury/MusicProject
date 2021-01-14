@@ -36,7 +36,6 @@ class MusicExpandableListAdapter( val context: Context,val  albumIdsList : Array
             val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
             convertView = layoutInflater.inflate(R.layout.album_layout, null)
         }
-
         return  convertView!!    }
 
     override fun getChildrenCount(groupPosition: Int): Int {

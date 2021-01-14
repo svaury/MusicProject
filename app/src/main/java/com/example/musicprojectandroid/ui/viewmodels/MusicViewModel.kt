@@ -1,14 +1,15 @@
 package com.example.musicprojectandroid.ui.viewmodels
 
 import android.os.Bundle
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.example.musicprojectandroid.model.Music
 import com.example.musicprojectandroid.repository.MusicRepository
 import com.example.musicprojectandroid.utils.Data
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import java.util.*
 
 class MusicViewModel(val musicRepository: MusicRepository) : ViewModel() {
@@ -17,16 +18,28 @@ class MusicViewModel(val musicRepository: MusicRepository) : ViewModel() {
         const val IsDataRestored = "IsDataRestored"
     }
 
+    val dataMusicList : MutableLiveData<Data<List<Music>>> = MutableLiveData()
 
-    fun getAllMusic(bundle: Bundle?) : LiveData<Data<List<Music>>>{
+    fun getMusics(bundle: Bundle?){
+        GlobalScope.launch(viewModelScope.coroutineContext + Dispatchers.IO){
+             getAllMusic(bundle).collect { value ->dataMusicList.postValue(value) }
 
-        return if(bundle?.getBoolean(IsDataRestored) != null && bundle.getBoolean(IsDataRestored)){
-            musicRepository.getMusciFromDb().asLiveData(viewModelScope.coroutineContext + Dispatchers.IO )
-
-        }else{
-            musicRepository.getAllMusicsFromApi().asLiveData(viewModelScope.coroutineContext +Dispatchers.IO )
         }
     }
+
+    fun getAllMusic(bundle: Bundle?): Flow<Data<List<Music>>> {
+        return if(bundle?.getBoolean(IsDataRestored) != null && bundle.getBoolean(IsDataRestored)){
+            println("getMusicFromDb")
+            musicRepository.getMusciFromDb()
+
+        }else{
+            println("getMusicFromApi")
+
+            musicRepository.getAllMusicsFromApi()
+        }
+    }
+
+
 
 
     fun saveState(bundle: Bundle){
