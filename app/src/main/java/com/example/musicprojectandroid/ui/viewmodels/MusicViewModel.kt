@@ -11,13 +11,12 @@ import com.example.musicprojectandroid.utils.Data
 import kotlinx.coroutines.Dispatchers
 import java.util.*
 
-class MusicViewModel : ViewModel() {
+class MusicViewModel(val musicRepository: MusicRepository) : ViewModel() {
 
     companion object {
         const val IsDataRestored = "IsDataRestored"
     }
 
-    val musicRepository = MusicRepository()
 
     fun getAllMusic(bundle: Bundle?) : LiveData<Data<List<Music>>>{
 

@@ -4,23 +4,18 @@ import androidx.room.Room
 import com.example.musicprojectandroid.ApplicationMusic
 import com.example.musicprojectandroid.model.Music
 import com.example.musicprojectandroid.repository.local.DbHelper
+import com.example.musicprojectandroid.repository.local.dao.MusicDao
 import com.example.musicprojectandroid.repository.remote.RetrofitBuilder
 import com.example.musicprojectandroid.repository.remote.ToApiModelMapper
+import com.example.musicprojectandroid.repository.remote.services.MusicApiService
 import com.example.musicprojectandroid.utils.Data
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
-class MusicRepository() {
+class MusicRepository(val musicDao: MusicDao,val musicApiService: MusicApiService) {
 
-    private val db = Room.databaseBuilder(
-            ApplicationMusic.appContext,
-            DbHelper::class.java, "database-musics"
-        ).build()
 
-    private val musicDao = db.musicDao()
-
-    private val musicApiService = RetrofitBuilder.musicApiService;
 
     fun getAllMusicsFromApi(): Flow<Data<List<Music>>> = flow {
         emit(Data.loading(emptyList()))

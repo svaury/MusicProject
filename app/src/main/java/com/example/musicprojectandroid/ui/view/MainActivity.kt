@@ -9,13 +9,21 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.room.Room
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.example.musicprojectandroid.ApplicationMusic
 import com.example.musicprojectandroid.R
 import com.example.musicprojectandroid.model.Music
+import com.example.musicprojectandroid.repository.MusicRepository
+import com.example.musicprojectandroid.repository.local.DbHelper
+import com.example.musicprojectandroid.repository.remote.RetrofitBuilder
+import com.example.musicprojectandroid.ui.ViewModelFactory
 import com.example.musicprojectandroid.ui.adapter.MusicExpandableListAdapter
 import com.example.musicprojectandroid.ui.viewmodels.MusicViewModel
 import com.example.musicprojectandroid.utils.Data
 import com.example.musicprojectandroid.utils.Status
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_main.view.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -72,6 +80,13 @@ class MainActivity : AppCompatActivity() {
             true
 
         }
+        pullToRefresh.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener {
+            setUpLiveData(null)
+            mListState = null
+            mListPosition = 0
+            mItemPosition = 0
+
+        })
 
     }
 
@@ -97,7 +112,13 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun setupViewModel() {
-        viewModel = ViewModelProviders.of(this).get(MusicViewModel::class.java)
+
+        val musicRepository = MusicRepository(Room.databaseBuilder(
+                ApplicationMusic.appContext,
+                DbHelper::class.java, "database-musics"
+        ).build().musicDao(), RetrofitBuilder.musicApiService)
+
+        viewModel = ViewModelProviders.of(this,ViewModelFactory(musicRepository)).get(MusicViewModel::class.java)
     }
 
     private fun setUpLiveData(bundle: Bundle?){
@@ -123,8 +144,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun displayData(data : Data<List<Music>>){
+
         recyclerView.visibility = View.VISIBLE
         progressBar.visibility = View.GONE
+        pullToRefresh.isRefreshing = false
         musicSortByAlbumId = data.data?.groupByTo(HashMap()) { music -> music.albumId }
         //albumAdpter = MusicExpandableListAdapter(this,ArrayList(musicSortByAlbumId!!.keys),musicSortByAlbumId)
         //recyclerView.setAdapter(albumAdpter)
