@@ -29,12 +29,8 @@ class MusicViewModel(val musicRepository: MusicRepository) : ViewModel() {
 
     fun getAllMusic(bundle: Bundle?): Flow<Data<List<Music>>> {
         return if(bundle?.getBoolean(IsDataRestored) != null && bundle.getBoolean(IsDataRestored)){
-            println("getMusicFromDb")
             musicRepository.getMusciFromDb()
-
         }else{
-            println("getMusicFromApi")
-
             musicRepository.getAllMusicsFromApi()
         }
     }

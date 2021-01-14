@@ -1,5 +1,6 @@
 package com.example.musicprojectandroid
 
+import android.os.Bundle
 import com.example.musicprojectandroid.model.Music
 import com.example.musicprojectandroid.repository.MusicRepository
 import com.example.musicprojectandroid.ui.viewmodels.MusicViewModel
@@ -7,8 +8,10 @@ import com.example.musicprojectandroid.utils.Data
 
 import io.mockk.every
 import io.mockk.mockkClass
+import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runBlockingTest
 
 import org.junit.Test
@@ -17,28 +20,36 @@ class ViewModelTest {
 
 
     private val  musicRepository = mockkClass(MusicRepository::class)
+    private val bundle = mockkClass(Bundle::class)
 
     @Test
     fun testViewModel() =runBlockingTest {
 
         every{
             musicRepository.getMusciFromDb()
-        }returns flow {Data.success(mockLocalMusicList())}
+        }returns flow {emit(Data.success(mockLocalMusicList()))}
 
 
         every{
             musicRepository.getAllMusicsFromApi()
-        }returns flow {Data.success(mockRemoteMusicList())}
+        }returns flow { emit(Data.success(mockRemoteMusicList()))}
 
         val viewModel = MusicViewModel(musicRepository)
 
-        musicRepository.getAllMusicsFromApi().collect{
-           print(it.data)
-        }
+        val result = viewModel.getAllMusic(null).toList()
 
-        val result = viewModel.getAllMusic(null).collect {
+        assertEquals(result[0].data,mockRemoteMusicList())
 
-        }
+        every {
+            bundle.getBoolean(MusicViewModel.IsDataRestored)
+
+        }returns true
+
+
+        val result2 = viewModel.getAllMusic(bundle).toList()
+
+        assertEquals(result2[0].data,mockLocalMusicList())
+
 
     }
 
