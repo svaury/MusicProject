@@ -35,9 +35,6 @@ class MusicViewModel(val musicRepository: MusicRepository) : ViewModel() {
         }
     }
 
-
-
-
     fun saveState(bundle: Bundle){
         bundle.putBoolean(IsDataRestored,true)
     }
