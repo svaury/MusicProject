@@ -42,11 +42,8 @@ class MainActivity : AppCompatActivity() {
     private var mListPosition = 0
     private var mItemPosition = 0
 
-    var musicSortByAlbumId : HashMap<Int,MutableList<Music>> ?= null
 
     var state: Parcelable? = null
-
-    lateinit var musicLiveData : MutableLiveData<Data<List<Music>>>
 
     var mLayoutManager: RecyclerView.LayoutManager? = null
 
@@ -55,9 +52,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         mLayoutManager =  LinearLayoutManager(this)
         setupViewModel()
+        setUpLiveData()
         setupUI()
-        setUpLiveData(savedInstanceState)
-        viewModel.getMusics(savedInstanceState)
         savedInstanceState?.let {
             mListState = it.getParcelable(LIST_STATE_KEY);
             mListPosition = it.getInt(LIST_POSITION_KEY);
@@ -87,7 +83,7 @@ class MainActivity : AppCompatActivity() {
 
         }
         pullToRefresh.setOnRefreshListener(SwipeRefreshLayout.OnRefreshListener {
-            viewModel.getMusics(null)
+            viewModel.getMusics()
             mListState = null
             mListPosition = 0
             mItemPosition = 0
@@ -98,18 +94,13 @@ class MainActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        viewModel.saveState(outState)
 
         mListState =expandableListView.onSaveInstanceState()
         outState.putParcelable(LIST_STATE_KEY, mListState)
 
-        // Save position of first visible item
-        // Save position of first visible item
         mListPosition = expandableListView.firstVisiblePosition
         outState.putInt(LIST_POSITION_KEY, mListPosition)
 
-        // Save scroll position of item
-        // Save scroll position of item
         val itemView: View = expandableListView.getChildAt(0)
         mItemPosition = itemView?.top ?: 0
         outState.putInt(ITEM_POSITION_KEY, mItemPosition)
@@ -120,14 +111,14 @@ class MainActivity : AppCompatActivity() {
     private fun setupViewModel() {
 
         val musicRepository = MusicRepository(Room.databaseBuilder(
-                ApplicationMusic.appContext,
-                DbHelper::class.java, "database-musics"
+            ApplicationMusic.appContext,
+            DbHelper::class.java, "database-musics"
         ).build().musicDao(), RetrofitBuilder.musicApiService)
 
         viewModel = ViewModelProviders.of(this,ViewModelFactory(musicRepository)).get(MusicViewModel::class.java)
     }
 
-    private fun setUpLiveData(bundle: Bundle?){
+    private fun setUpLiveData(){
 
         viewModel.dataMusicList.observe(this, Observer {
             when(it.status){
@@ -142,8 +133,6 @@ class MainActivity : AppCompatActivity() {
 
 
                 }
-                Status.LOADING -> {
-                }
             }
 
         })
@@ -155,10 +144,7 @@ class MainActivity : AppCompatActivity() {
         expandableListView.visibility = View.VISIBLE
         progressBar.visibility = View.GONE
         pullToRefresh.isRefreshing = false
-        musicSortByAlbumId = data.data?.groupByTo(HashMap()) { music -> music.albumId }
-        //albumAdpter = MusicExpandableListAdapter(this,ArrayList(musicSortByAlbumId!!.keys),musicSortByAlbumId)
-        //recyclerView.setAdapter(albumAdpter)
-        albumAdpter.updateAlbumMap(musicSortByAlbumId)
+        albumAdpter.updateAlbumMap(viewModel.sortMusicByAlbumID(data))
         data.data?.let {
             if(it.isNotEmpty()){
                 expandableListView.expandGroup(0)

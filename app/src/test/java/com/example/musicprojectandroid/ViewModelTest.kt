@@ -36,20 +36,12 @@ class ViewModelTest {
 
         val viewModel = MusicViewModel(musicRepository)
 
-        val result = viewModel.getAllMusic(null).toList()
-
-        assertEquals(result[0].data,mockRemoteMusicList())
+        val result = viewModel.getMusics()
 
         every {
             bundle.getBoolean(MusicViewModel.IsDataRestored)
 
         }returns true
-
-
-        val result2 = viewModel.getAllMusic(bundle).toList()
-
-        assertEquals(result2[0].data,mockLocalMusicList())
-
 
     }
 
